@@ -1,0 +1,24 @@
+services:
+  backend:
+    build:
+      context: ./backend
+    environment:
+      CNZAMNT_ADDR: ":8080"
+      CNZAMNT_DB_PATH: "/data/cnzamnt.db"
+    ports:
+      - "18080:8080"
+    volumes:
+      - cnzamnt-data:/data
+
+  frontend:
+    build:
+      context: ./frontend
+    environment:
+      VITE_PROXY_API_TARGET: "http://backend:8080"
+    ports:
+      - "5173:5173"
+    depends_on:
+      - backend
+
+volumes:
+  cnzamnt-data:

@@ -107,7 +107,18 @@ make backend-test
 make backend-build
 ```
 
-Frontend and full-app Docker commands should be added when those pieces are built.
+Frontend and Docker commands now available:
+
+```bash
+make frontend-dev
+make frontend-build
+make dev
+make up
+make down
+make logs
+make logs-backend
+make logs-frontend
+```
 
 ## Project Docs
 
