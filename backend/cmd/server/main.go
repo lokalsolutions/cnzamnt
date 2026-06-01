@@ -7,6 +7,7 @@ import (
 
 	"cnzamnt/backend/internal/api"
 	"cnzamnt/backend/internal/db"
+	"cnzamnt/backend/internal/seed"
 )
 
 func main() {
@@ -18,6 +19,10 @@ func main() {
 		log.Fatal(err)
 	}
 	defer database.Close()
+
+	if err := seed.Ensure(database); err != nil {
+		log.Fatal(err)
+	}
 
 	server := api.New(database)
 	log.Printf("CnzAMnt API listening on %s", addr)

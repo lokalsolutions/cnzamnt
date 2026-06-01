@@ -117,7 +117,7 @@ func (s *Service) Artworks() ([]models.Artwork, error) {
 		return nil, err
 	}
 
-	var artworks []models.Artwork
+	artworks := []models.Artwork{}
 	for rows.Next() {
 		artwork, err := scanArtwork(rows)
 		if err != nil {
@@ -243,7 +243,7 @@ func (s *Service) Comments(artworkID int64) ([]models.Comment, error) {
 		return nil, err
 	}
 
-	var comments []models.Comment
+	comments := []models.Comment{}
 	for rows.Next() {
 		comment, err := scanComment(rows)
 		if err != nil {

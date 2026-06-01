@@ -19,12 +19,19 @@ async function request<T>(path: string, options: RequestInit = {}): Promise<T> {
     },
   });
 
+  const contentType = response.headers.get('content-type') ?? '';
+  const body = await response.text();
+
   if (!response.ok) {
-    const message = await response.text();
+    const message = body;
     throw new Error(message || `Request failed: ${response.status}`);
   }
 
-  return response.json() as Promise<T>;
+  if (!contentType.includes('application/json')) {
+    throw new Error(`Expected JSON from ${path}, but received ${contentType || 'unknown content type'}. Check that the frontend is proxying /api to the Go backend.`);
+  }
+
+  return JSON.parse(body) as T;
 }
 
 export function getMe() {
