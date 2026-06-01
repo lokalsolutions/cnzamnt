@@ -1,6 +1,9 @@
 backend/bin/
 backend/data/
 backend/.gocache/
+frontend/node_modules/
+frontend/dist/
+.npm-cache/
 *.db
 *.db-shm
 *.db-wal
