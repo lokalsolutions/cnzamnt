@@ -1,0 +1,15 @@
+{$CNZAMNT_DOMAIN} {
+	encode zstd gzip
+
+	handle /api/* {
+		reverse_proxy backend:8080
+	}
+
+	reverse_proxy frontend:80
+}
+
+{$CNZAMNT_API_DOMAIN} {
+	encode zstd gzip
+
+	reverse_proxy backend:8080
+}

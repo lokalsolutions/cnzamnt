@@ -2,23 +2,45 @@ services:
   backend:
     build:
       context: ./backend
+    restart: unless-stopped
     environment:
       CNZAMNT_ADDR: ":8080"
       CNZAMNT_DB_PATH: "/data/cnzamnt.db"
+    expose:
+      - "8080"
     ports:
-      - "18080:8080"
+      - "${CNZAMNT_LOCAL_API_PORT:-18080}:8080"
     volumes:
       - cnzamnt-data:/data
 
   frontend:
     build:
       context: ./frontend
-    environment:
-      VITE_PROXY_API_TARGET: "http://backend:8080"
-    ports:
-      - "5173:5173"
+      target: prod
+    restart: unless-stopped
+    expose:
+      - "80"
     depends_on:
       - backend
 
+  caddy:
+    image: caddy:2-alpine
+    restart: unless-stopped
+    depends_on:
+      - backend
+      - frontend
+    environment:
+      CNZAMNT_DOMAIN: "${CNZAMNT_DOMAIN:?Set CNZAMNT_DOMAIN in .env}"
+      CNZAMNT_API_DOMAIN: "${CNZAMNT_API_DOMAIN:?Set CNZAMNT_API_DOMAIN in .env}"
+    ports:
+      - "${CNZAMNT_HTTP_PORT:-80}:80"
+      - "${CNZAMNT_HTTPS_PORT:-443}:443"
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy-data:/data
+      - caddy-config:/config
+
 volumes:
   cnzamnt-data:
+  caddy-data:
+  caddy-config:

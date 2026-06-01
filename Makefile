@@ -1,8 +1,20 @@
-.PHONY: dev up down logs logs-backend logs-frontend backend-dev backend-test backend-build frontend-dev frontend-build
+-include .env
+export
+
+.PHONY: dev prod up down logs logs-backend logs-frontend logs-caddy backend-dev backend-test backend-build frontend-dev frontend-build test-e2e require-prod-env
 
 BACKEND_GOCACHE ?= $(CURDIR)/backend/.gocache
 
+require-prod-env:
+	@if [ -z "$(CNZAMNT_DOMAIN)" ] || [ -z "$(CNZAMNT_API_DOMAIN)" ]; then \
+		echo "CNZAMNT_DOMAIN and CNZAMNT_API_DOMAIN are required. Copy .env.example to .env and edit it."; \
+		exit 2; \
+	fi
+
 dev:
+	docker compose up --build -d
+
+prod: require-prod-env
 	docker compose up --build -d
 
 up:
@@ -20,6 +32,9 @@ logs-backend:
 logs-frontend:
 	docker compose logs -f frontend
 
+logs-caddy:
+	docker compose logs -f caddy
+
 backend-dev:
 	cd backend && GOCACHE="$(BACKEND_GOCACHE)" go run ./cmd/server
 
@@ -34,3 +49,6 @@ frontend-dev:
 
 frontend-build:
 	cd frontend && npm run build
+
+test-e2e:
+	cd frontend && npm run test:e2e
